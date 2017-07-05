@@ -7,7 +7,8 @@ cap = cv2.VideoCapture(url)
 while True:
     ret, img = cap.read()
     cv2.imshow('Frame', img)
-    if cv2.waitKey(1) and ord('x'):
+
+    if cv2.waitKey(1) & 0xFF == ord('x'):
         break
 
 cap.release()
