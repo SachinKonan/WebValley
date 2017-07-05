@@ -18,12 +18,8 @@ class CamHandler(BaseHTTPRequestHandler):
 			self.end_headers()
 			while True:
 				try:
-					#rc,img = capture.read()
 					img = capture.read()
-					#img = imutils.resize(img, width = 640, height = 480)
-					#if not rc:
-						#continue
-					if(img != None):
+					if(img.shape != None):
 						pass
 					r, buf = cv2.imencode(".jpg", img)
 					self.wfile.write("--jpgboundary\r\n".encode())
