@@ -81,7 +81,17 @@ def realmain():
 	global frame
 	cap = WebcamVideoStream(src=0).start()
 
-	server = ThreadedHTTPServer((ip, 5810), CamHandler)
+	while True:
+		frame = cap.read()
+		print(frame.shape)
+		cv2.imshow('Frame', frame)
+		if cv2.waitKey(1) & 0xFF == ord('x'):
+			break
+	cap.stop()
+	cv2.destroyAllWindows()
+
+	"""
+	server = ThreadedHTTPServer(('', 5810), CamHandler)
 	print("starting server")
 
 	target = Thread(target=server.serve_forever, args=())
@@ -100,6 +110,6 @@ def realmain():
 		cap.stop()
 		target.join()
 		sys.exit()
-
+	"""
 if __name__ == '__main__':
 	realmain()

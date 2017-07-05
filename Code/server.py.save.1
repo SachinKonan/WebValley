@@ -6,9 +6,7 @@ from SocketServer import ThreadingMixIn
 import StringIO
 import time
 import imutils
-from threading import Thread
-
-capture=None
+ca
 
 class CamHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
@@ -19,10 +17,12 @@ class CamHandler(BaseHTTPRequestHandler):
 			while True:
 				try:
 					rc,img = capture.read()
-					img = imutils.resize(img, width = 640, height = 480)
+					print img.shape
+					img = imutils.resize(img, width = 320, height = 240)
 					if not rc:
 						continue
-					jpg = Image.fromarray(img)
+					imgRGB=cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+					jpg = Image.fromarray(imgRGB)
 					tmpFile = StringIO.StringIO()
 					jpg.save(tmpFile,'JPEG')
 					self.wfile.write("--jpgboundary")
@@ -30,6 +30,7 @@ class CamHandler(BaseHTTPRequestHandler):
 					self.send_header('Content-length',str(tmpFile.len))
 					self.end_headers()
 					jpg.save(self.wfile,'JPEG')
+					time.sleep(0.05)
 				except KeyboardInterrupt:
 					break
 			return
