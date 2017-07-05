@@ -18,8 +18,9 @@ class CamHandler(BaseHTTPRequestHandler):
 			self.end_headers()
 			while True:
 				try:
-					rc,img = capture.read()
-					img = imutils.resize(img, width = 640, height = 480)
+					#rc,img = capture.read()
+					img = capture.read()
+					#img = imutils.resize(img, width = 640, height = 480)
 					if not rc:
 						continue
 					jpg = Image.fromarray(img)
@@ -31,6 +32,7 @@ class CamHandler(BaseHTTPRequestHandler):
 					self.end_headers()
 					jpg.save(self.wfile,'JPEG')
 				except KeyboardInterrupt:
+					capture.stop()
 					break
 			return
 		if self.path.endswith('.html'):
@@ -46,9 +48,29 @@ class CamHandler(BaseHTTPRequestHandler):
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 	"""Handle requests in a separate thread."""
 
+class WebcamVideoStream:
+	def __init__(self, src=0):
+		self.stream = cv2.VideoCapture(src)
+		(self.grabbed, self.frame) = self.stream.read()
+		self.stopped = False
+	def start(self):
+		Thread(target=self.update, args=()).start()
+		return self
+	def update(self):
+		while True:
+			if self.stopped:
+				self.stream.release()
+				return
+			(self.grabbed, self.frame) = self.stream.read()
+	def read(self):
+		return cv2.cvtColor(self.frame,cv2.COLOR_BGR2RGB)
+	def stop(self):
+		self.stopped = True
+
 def main():
 	global capture
-	capture = cv2.VideoCapture(0)
+	#capture = cv2.VideoCapture(0)
+	capture = WebcamVideoStream(0).start()
 	global img
 	server = ThreadedHTTPServer(('', 8080), CamHandler)
 	print "server started"
