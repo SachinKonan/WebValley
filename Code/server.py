@@ -23,6 +23,13 @@ class CamHandler(BaseHTTPRequestHandler):
 					#img = imutils.resize(img, width = 640, height = 480)
 					#if not rc:
 						#continue
+					if(img != None):
+						pass
+					r, buf = cv2.imencode(".jpg", img)
+					self.wfile.write("--jpgboundary\r\n".encode())
+					self.end_headers()
+					self.wfile.write(bytearray(buf))
+					"""
 					jpg = Image.fromarray(img)
 					tmpFile = StringIO.StringIO()
 					jpg.save(tmpFile,'JPEG')
@@ -30,7 +37,7 @@ class CamHandler(BaseHTTPRequestHandler):
 					self.send_header('Content-type','image/jpeg')
 					self.send_header('Content-length',str(tmpFile.len))
 					self.end_headers()
-					jpg.save(self.wfile,'JPEG')
+					jpg.save(self.wfile,'JPEG')"""
 				except KeyboardInterrupt:
 					capture.stop()
 					break
