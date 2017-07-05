@@ -21,8 +21,8 @@ class CamHandler(BaseHTTPRequestHandler):
 					#rc,img = capture.read()
 					img = capture.read()
 					#img = imutils.resize(img, width = 640, height = 480)
-					if not rc:
-						continue
+					#if not rc:
+						#continue
 					jpg = Image.fromarray(img)
 					tmpFile = StringIO.StringIO()
 					jpg.save(tmpFile,'JPEG')
@@ -63,7 +63,7 @@ class WebcamVideoStream:
 				return
 			(self.grabbed, self.frame) = self.stream.read()
 	def read(self):
-		return cv2.cvtColor(self.frame,cv2.COLOR_BGR2RGB)
+		return self.frame
 	def stop(self):
 		self.stopped = True
 
@@ -72,9 +72,11 @@ def main():
 	#capture = cv2.VideoCapture(0)
 	capture = WebcamVideoStream(0).start()
 	global img
-	server = ThreadedHTTPServer(('', 8080), CamHandler)
-	print "server started"
-	server.serve_forever()
-
+	try:
+		server = ThreadedHTTPServer(('', 8080), CamHandler)
+		print "server started"
+		server.serve_forever()
+	except KeyboardInterrupt:
+		capture.stop()
 if __name__ == '__main__':
 	main()
